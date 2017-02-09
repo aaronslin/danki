@@ -1,16 +1,16 @@
 {
-  "manifest_version": 2,
-
-  "name": "Getting started example",
-  "description": "This extension shows a Google Image search result for the current page",
-  "version": "1.0",
-
-  "browser_action": {
-    "default_icon": "icon.png",
-    "default_popup": "popup.html"
+  "chrome_url_overrides" : {
+    "newtab": "danki.html"
   },
-  "permissions": [
-    "activeTab",
-    "https://ajax.googleapis.com/"
-  ]
+  "manifest_version": 2,
+  "name": "Danki",
+  "version": "0.0"
 }
+
+
+  //  "content_scripts": [ {
+  //     "css": [ "demote.css" ],
+  //     "js": [ "jquery.min.js", "demote.js" ],
+  //     "matches": [ "*://www.facebook.com/*", "*://web.facebook.com/*", "*://www.messenger.com/*" ],
+  //     "run_at": "document_idle"
+  // } ],

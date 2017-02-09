@@ -1,0 +1,49 @@
+/* danki.css */
+
+
+#flashcardContainer {
+	height: 40%;
+	background-color: #AAA;
+}
+
+#otherContainer {
+	margin-top: 10px;
+	height: 50%;
+}
+
+#wrapper {
+	width: 1000px;
+	background-color: #CCC;
+	height: 80%;
+	min-height: 600px;
+	margin-top: 20px;
+}
+
+
+
+
+/* Centering */
+
+body {
+    /* Firefox */
+    display:-moz-box;
+    -moz-box-pack:center;
+    -moz-box-align:center;
+
+    /* Safari and Chrome */
+    display:-webkit-box;
+    -webkit-box-pack:center;
+    -webkit-box-align:center;
+
+    /* W3C */
+    display:box;
+    box-pack:center;
+    box-align:center;
+}
+
+/* General Aesthetics */
+
+div {
+    border: 1px solid #000000;
+    padding: 5px;
+}
