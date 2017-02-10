@@ -1,7 +1,8 @@
 <html>
-	<script src="danki.js"></script>
-	<link href="danki.css" rel="stylesheet" type="text/css" />
-	<link href="bootstrap.css" rel="stylesheet" type="text/css" />
+	<head>
+		<link href="danki.css" rel="stylesheet" type="text/css" />
+		<link href="bootstrap.css" rel="stylesheet" type="text/css" />
+	</head>
 
 	<body>
 		<div id="wrapper">
@@ -9,8 +10,34 @@
 				Hello
 			</div>
 			<div id="otherContainer">
-				Bye
+				<table id="otherTable">
+					<tr>
+						<td>User Actions</td>
+						<td>Output Log</td>
+						<td>Storage Display</td>
+					</tr>
+					<tr>
+						<td id="userActions">
+							Add deck:
+							<form id="addDeckForm">
+								<input type="text" id="addDeckInput" />
+								<input type="submit" id="addDeckSubmit" />
+							</form>
+						</td>
+						<td id="outputLog">
+							<table id="outputLogTable">
+
+							</table>
+						</td>
+						<td id="storageDisplay">
+							<div id="storageDisplayText">
+							</div>
+						</td>
+				</table>
 			</div>
 		</div>
 	</body>
+
+	<script src="jquery.slim.min.js"></script>
+	<script src="danki.js"></script>
 </html>

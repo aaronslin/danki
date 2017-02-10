@@ -4,13 +4,9 @@
   },
   "manifest_version": 2,
   "name": "Danki",
+  "permissions": [
+    "storage",
+    "unlimitedStorage"
+  ],
   "version": "0.0"
 }
-
-
-  //  "content_scripts": [ {
-  //     "css": [ "demote.css" ],
-  //     "js": [ "jquery.min.js", "demote.js" ],
-  //     "matches": [ "*://www.facebook.com/*", "*://web.facebook.com/*", "*://www.messenger.com/*" ],
-  //     "run_at": "document_idle"
-  // } ],

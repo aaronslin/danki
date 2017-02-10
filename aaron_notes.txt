@@ -1,0 +1,19 @@
+
+
+----------------
+   BASIC
+----------------
+
+New tab page:
+	interface for adding card to a specific deck
+	displays a word in a deck if it's time to be displayed
+
+
+
+----------------
+  ADVANCED
+----------------
+
+Page to see what the next few words coming up are
+Some kind of Machine Learning to build an ordering of words that you know or don't know.
+Use a more appropriate data structure for storage

@@ -2,13 +2,13 @@
 
 
 #flashcardContainer {
-	height: 40%;
+	height: 35%;
 	background-color: #AAA;
 }
 
 #otherContainer {
 	margin-top: 10px;
-	height: 50%;
+	height: 60%;
 }
 
 #wrapper {
@@ -17,6 +17,21 @@
 	height: 80%;
 	min-height: 600px;
 	margin-top: 20px;
+}
+
+#userActions,
+#outputLog,
+#storageDisplay {
+	width: 30%;
+}
+
+#otherTable {
+	width: 95%;
+}
+
+#storageDisplayText {
+	font-family: "Monaco";
+	font-size: 12pt;
 }
 
 
