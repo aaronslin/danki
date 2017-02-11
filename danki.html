@@ -7,7 +7,7 @@
 	<body>
 		<div id="wrapper">
 			<div id="flashcardContainer">
-				Hello
+				Card goes here.
 			</div>
 			<div id="otherContainer">
 				<table id="otherTable">
@@ -18,11 +18,41 @@
 					</tr>
 					<tr>
 						<td id="userActions">
-							Add deck:
+
+							<h5>Add deck:</h5>
 							<form id="addDeckForm">
 								<input type="text" id="addDeckInput" />
 								<input type="submit" id="addDeckSubmit" />
 							</form>
+
+							<h5>Add Card:</h5>
+							<form id="addCardForm">
+								<table id="addCardTable">
+									<tr>
+										<td>Deck:</td>
+										<td>
+											<select id="addCardSelect">
+												<option>hi</option>
+											</select>
+										</td>
+									</tr>
+									
+									<tr>
+										<td>Front:</td>
+										<td><textarea id="addCardFront"></textarea></td>
+									</tr>
+
+									<tr>
+										<td>Back:</td>
+										<td><textarea id="addCardBack"></textarea></td>
+									</tr>
+									<tr>
+										<td><input type="submit" id="addCardSubmit" /></td>
+										<td></td>
+									</tr>
+								</table>
+							</form>
+
 						</td>
 						<td id="outputLog">
 							<table id="outputLogTable">
