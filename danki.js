@@ -10,6 +10,7 @@ var FRONT_KEY = "FRONT";
 var BACK_KEY = "BACK";
 var SRS_KEY = "SRS";
 var SRS_DEFAULT = 1;
+var SRS_ALGORITHM = srs_Leitner;
 
 $(document).ready(function() {
 	onloadProcedures();
@@ -100,7 +101,24 @@ function listContainsEl(list, element) {
 }
 
 
+/* https://en.wikipedia.org/wiki/Leitner_system 
+	Using a modified algorithm to not completely reset bucket upon wrong answer */
+function srs_Leitner(bucketNum, isCorrect) {
+	var minBucket = 1;
+	var maxBucket = 5;
+	if (isCorrect) {
+		return Math.min(maxBucket, bucketNum+1);
+	}
+	else {
+		var newBucket = Math.floor(bucketNum/2);
+		return Math.max(minBucket, newBucket);
+	}
+}
 
+function srsBucketToTime(bucketNum) {
+	noise = 1;
+
+}
 
 /* ------------ DEPRECATED ------------ */
 
