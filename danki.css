@@ -4,6 +4,7 @@
 #flashcardContainer {
 	height: 35%;
 	background-color: #AAA;
+	text-align: center;
 }
 
 #otherContainer {
@@ -34,6 +35,26 @@
 	font-size: 12pt;
 }
 
+
+.flashcard {
+	background-color: #f1e9d2;
+	display: inline-block;
+	width: 45%;
+	height: 99%;
+	max-width: 500px;
+	max-height: 400px;
+	text-align: left;
+	vertical-align: text-middle;
+	padding: 10px;
+	text-align: center;
+
+}
+
+
+#flashcardSeparator {
+	display: inline-block;
+	width: 5%;
+}
 
 
 

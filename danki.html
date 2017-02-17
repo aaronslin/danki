@@ -7,7 +7,14 @@
 	<body>
 		<div id="wrapper">
 			<div id="flashcardContainer">
-				Card goes here.
+				<div id="flashcardFront" class="flashcard">
+					Front.
+				</div>
+				<span id="flashcardSeparator">
+				</span>
+				<div id="flashcardBack" class="flashcard">
+					Back.
+				</div>
 			</div>
 			<div id="otherContainer">
 				<table id="otherTable">
@@ -17,6 +24,7 @@
 						<td>Storage Display</td>
 					</tr>
 					<tr>
+						<!-- User Actions panel -->
 						<td id="userActions">
 
 							<h5>Add deck:</h5>
@@ -52,8 +60,9 @@
 									</tr>
 								</table>
 							</form>
-
 						</td>
+
+						<!-- Output Log (currently empty) -->
 						<td id="outputLog">
 							<table id="outputLogTable">
 
