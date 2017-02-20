@@ -3,14 +3,26 @@
 // There are probably some better data structures besides 
 // whatever the heck we're using
 
-var DECK_NAMES_KEY = "ALLDECKS";
+// Chrome main storage key names
+var ACTIVE_DECK_KEY = "ACTIVE_DECKS";
+var INACTIVE_DECK_KEY = "INACTIVE_DECKS";
 var EMPTY_LIST = [];
-var BANNED_DECK_NAMES = [DECK_NAMES_KEY, ""];
+var BANNED_DECK_NAMES = [ACTIVE_DECK_KEY, INACTIVE_DECK_KEY, ""];
+
+// Card storage key names 
 var FRONT_KEY = "FRONT";
 var BACK_KEY = "BACK";
-var SRS_KEY = "SRS";
-var SRS_DEFAULT = 1;
+var BUCKET_KEY = "SRS";
+var BUCKET_DEFAULT = 1;
+var CREATED_KEY = "ADDED";
+var NEXT_REVIEW_KEY = "NEXT_REVIEW";
+
+// Other global variables
 var SRS_ALGORITHM = srs_Leitner;
+var FREQUENCY = 4000;
+var NEXT_REVIEW_TIME = 2; // null;
+var NEXT_REVIEW_CARD = null;
+
 
 $(document).ready(function() {
 	onloadProcedures();
@@ -26,20 +38,67 @@ $(document).ready(function() {
 	})
 });
 
+var checkQueueInterval = setInterval(function() {
+	if (!NEXT_REVIEW_TIME) {
+		return;
+	}
+	if (Date.now() > NEXT_REVIEW_TIME) {
+		chrome.storage.local.get(null, function (localStoreObj) {
+			decks = localStoreObj[ACTIVE_DECK_KEY];
+
+			activeCards = [];
+			for(var i=0; i<decks.length; i++) {
+				deckName = decks[i];
+				activeCards = activeCards.concat(localStoreObj[deckName]);
+			}
+
+			expiredCards = activeCards.filter(function(cardObj) { 
+				var nextReview = cardObj[NEXT_REVIEW_KEY];
+				return typeof(nextReview) == "number" && nextReview < NEXT_REVIEW_TIME;
+			});
+
+			// Cards are sorted backwards by expiration date
+			expiredCards = expiredCards.sort(function(card1, card2) {
+				return card2[NEXT_REVIEW_KEY]-card1[NEXT_REVIEW_KEY];
+			});
+		});
+	}
+		/* If next_review_time passed:
+			Q <- Search for all cards that have expired; sort by time
+			For all cards in Q:
+				Check if the time has passed (async issues)
+				Display card
+				Update the card difficulty and time
+			Once Q is empty: 
+			Update the next_review_time
+
+		Remember that this interval function will be running independently of __
+		Thus, we might get some async issues if user takes more than 10 seconds
+
+		Perhaps introduce a lock when there's currently a card being displayed
+	*/
+
+}, FREQUENCY);
+
+
 chrome.storage.onChanged.addListener(function(changes, namespace) {
 	onloadProcedures();
 });
 
 function onloadProcedures() {
 	updateJSONDisplay();
-	updateDeckSelection();
+	updateDeckChoicesHTML();
+	updateNextCardInfo();
 }
 
-function updateDeckSelection() {
+function updateNextCardInfo() {
+	// TODO: make sure that NEXT_REVIEW_TIME isn't null
+}
+
+function updateDeckChoicesHTML() {
 	$("#addCardSelect option").remove();
-	chrome.storage.local.get(DECK_NAMES_KEY, function(deckNamesObj) {
-		deckNames = deckNamesObj[DECK_NAMES_KEY];
-		console.log(deckNamesObj)
+	chrome.storage.local.get(ACTIVE_DECK_KEY, function(deckNamesObj) {
+		deckNames = deckNamesObj[ACTIVE_DECK_KEY];
 		$.each(deckNames, function(key, value) {
 			$("#addCardSelect").append(new Option(value, value));
 		});
@@ -52,7 +111,7 @@ function addNewDeck() {
 		console.log("Deck name not permitted:", deckName);
 		return;
 	}
-	pushToStorageList(DECK_NAMES_KEY, deckName, function(result) {
+	pushToStorageList(ACTIVE_DECK_KEY, deckName, function(result) {
 		chrome.storage.local.set({[deckName]: []}, function(result) {
 			alertUser("Deck successfully created:", deckName);
 		});
@@ -69,11 +128,21 @@ function addNewCard() {
 		return;
 	}
 	var cardToStore = {[FRONT_KEY]: front, 
-					[BACK_KEY]: back,
-					[SRS_KEY]: SRS_DEFAULT};
+						[BACK_KEY]: back,
+						[BUCKET_KEY]: BUCKET_DEFAULT,
+						[NEXT_REVIEW_KEY]: temporaryNextReview(),
+						[CREATED_KEY]: Date.now()
+	};
+
+	/* TODO: change the NEXT_REVIEW_KEY value */
+
 	pushToStorageList(deckName, cardToStore, function(result) {
 		console.log("Card successfully added");
 	});
+}
+
+function temporaryNextReview() {
+	return Math.floor(Math.random()*5)+Math.random();
 }
 
 function updateJSONDisplay() {
@@ -104,7 +173,7 @@ function listContainsEl(list, element) {
 /* https://en.wikipedia.org/wiki/Leitner_system 
 	Using a modified algorithm to not completely reset bucket upon wrong answer */
 function srs_Leitner(bucketNum, isCorrect) {
-	var minBucket = 1;
+	var minBucket = BUCKET_DEFAULT;
 	var maxBucket = 5;
 	if (isCorrect) {
 		return Math.min(maxBucket, bucketNum+1);
@@ -129,8 +198,8 @@ function alertUser(message1, message2) {
 }
 
 function DEPRECATED_storeCard(deckName, cardToStore) {
-	chrome.storage.local.get({DECK_NAMES_KEY: EMPTY_LIST}, function(decksObj) {
-		decks = decksObj[DECK_NAMES_KEY];
+	chrome.storage.local.get({ACTIVE_DECK_KEY: EMPTY_LIST}, function(decksObj) {
+		decks = decksObj[ACTIVE_DECK_KEY];
 
 		/* Check if deckName exists as a key */
 		validDeckNames = decks.filter(function(elem) {
