@@ -35,7 +35,11 @@ $(document).ready(function() {
 	$("#addCardForm").submit(function(event) {
 		event.preventDefault();
 		addNewCard();
-	})
+	});
+
+	$("#flashcardFront").click(function(event) {
+		displayFlashcardBack();
+	});
 });
 
 var checkExpirationInterval = setInterval(function() {
@@ -75,16 +79,18 @@ var checkExpirationInterval = setInterval(function() {
 }, 4000);
 
 function displayFlashcardFront(nextCard) {
-	frontDiv = $("#flashcardFront");
-	backDiv = $("#flashcardBack");
+	$("#flashcardFront").removeClass("inactiveCard").addClass("activeCard");
+	$("#flashcardBack").removeClass("activeCard").addClass("inactiveCard");
 
-	frontDiv.removeClass("inactiveCard").addClass("activeCard")
-	backDiv.removeClass("activeCard").addClass("inactiveCard")
-	frontDiv.html(nextCard[FRONT_KEY])
-	backDiv.html(nextCard[BACK_KEY])
+	$("#flashcardFront > .flashcardInner").html(nextCard[FRONT_KEY])
+	$("#flashcardBack > .flashcardInner").html(nextCard[BACK_KEY])
+}
 
-	console.log("Front:", nextCard[FRONT_KEY])
-	console.log("Back: ", nextCard[BACK_KEY])
+function displayFlashcardBack() {
+	if ($("#flashcardFront").hasClass("activeCard")) {
+	$("#flashcardBack").removeClass("inactiveCard").addClass("activeCard");
+		
+	}
 }
 
 function getNextCardByTime(localStoreObj) {

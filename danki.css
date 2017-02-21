@@ -2,14 +2,14 @@
 
 
 #flashcardContainer {
-	height: 35%;
+	height: 40%;
 	background-color: #AAA;
 	text-align: center;
 }
 
 #otherContainer {
 	margin-top: 10px;
-	height: 60%;
+	height: 57%;
 }
 
 #wrapper {
@@ -36,21 +36,28 @@
 }
 
 
-.flashcard {
+.flashcardOuter {
 	background-color: #F00;
 	display: inline-block;
 	width: 45%;
 	height: 99%;
 	max-width: 500px;
 	max-height: 400px;
-	text-align: left;
-	vertical-align: text-middle;
 	padding: 10px;
 	text-align: center;
 }
 
+.flashcardInner {
+	position: relative;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 30px;
+}
+
 .inactiveCard {
 	background-color: #49466A;
+	display: none;
 }
 
 .activeCard {
