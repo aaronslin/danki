@@ -37,7 +37,7 @@
 
 
 .flashcard {
-	background-color: #f1e9d2;
+	background-color: #F00;
 	display: inline-block;
 	width: 45%;
 	height: 99%;
@@ -47,7 +47,14 @@
 	vertical-align: text-middle;
 	padding: 10px;
 	text-align: center;
+}
 
+.inactiveCard {
+	background-color: #49466A;
+}
+
+.activeCard {
+	background-color: #f1e9d2;
 }
 
 

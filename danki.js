@@ -20,8 +20,8 @@ var NEXT_REVIEW_KEY = "NEXT_REVIEW";
 // Other global variables
 var SRS_ALGORITHM = srs_Leitner;
 var FREQUENCY = 4000;
-var NEXT_REVIEW_TIME = 2; // null;
-var NEXT_REVIEW_CARD = null;
+var NEXT_REVIEW_TIME = 2; // null; // Use null to denote that a card is currently displayed
+var EXPIRED_CARDS_QUEUE = [];
 
 
 $(document).ready(function() {
@@ -38,29 +38,18 @@ $(document).ready(function() {
 	})
 });
 
-var checkQueueInterval = setInterval(function() {
+var checkExpirationInterval = setInterval(function() {
 	if (!NEXT_REVIEW_TIME) {
 		return;
 	}
-	if (Date.now() > NEXT_REVIEW_TIME) {
+	if (NEXT_REVIEW_TIME < Date.now()) {
 		chrome.storage.local.get(null, function (localStoreObj) {
-			decks = localStoreObj[ACTIVE_DECK_KEY];
-
-			activeCards = [];
-			for(var i=0; i<decks.length; i++) {
-				deckName = decks[i];
-				activeCards = activeCards.concat(localStoreObj[deckName]);
+			nextCard = getNextCardByTime(localStoreObj);
+			if (nextCard[NEXT_REVIEW_KEY] > Date.now()) {
+				return;
 			}
-
-			expiredCards = activeCards.filter(function(cardObj) { 
-				var nextReview = cardObj[NEXT_REVIEW_KEY];
-				return typeof(nextReview) == "number" && nextReview < NEXT_REVIEW_TIME;
-			});
-
-			// Cards are sorted backwards by expiration date
-			expiredCards = expiredCards.sort(function(card1, card2) {
-				return card2[NEXT_REVIEW_KEY]-card1[NEXT_REVIEW_KEY];
-			});
+			displayFlashcardFront(nextCard);
+			NEXT_REVIEW_TIME = null;
 		});
 	}
 		/* If next_review_time passed:
@@ -75,10 +64,75 @@ var checkQueueInterval = setInterval(function() {
 		Remember that this interval function will be running independently of __
 		Thus, we might get some async issues if user takes more than 10 seconds
 
+		If we update flashcard interface in here and 10 seconds passes, what happens?
+
 		Perhaps introduce a lock when there's currently a card being displayed
+
+		We only want to display a card when either: (1) we just answered a card or 
+			(2) NEXT_REVIEW_TIME has passed
 	*/
 
-}, FREQUENCY);
+}, 4000);
+
+function displayFlashcardFront(nextCard) {
+	frontDiv = $("#flashcardFront");
+	backDiv = $("#flashcardBack");
+
+	frontDiv.removeClass("inactiveCard").addClass("activeCard")
+	backDiv.removeClass("activeCard").addClass("inactiveCard")
+	frontDiv.html(nextCard[FRONT_KEY])
+	backDiv.html(nextCard[BACK_KEY])
+
+	console.log("Front:", nextCard[FRONT_KEY])
+	console.log("Back: ", nextCard[BACK_KEY])
+}
+
+function getNextCardByTime(localStoreObj) {
+	decks = localStoreObj[ACTIVE_DECK_KEY];
+	activeCards = [];
+	for(var i=0; i<decks.length; i++) {
+		deckName = decks[i];
+		activeCards = activeCards.concat(localStoreObj[deckName]);
+	}
+
+	return argmin(activeCards, function(card) {
+		return card[NEXT_REVIEW_KEY]
+	});
+}
+
+function argmin(list, criterion) {
+	var minVal = Infinity;
+	var minArg = null;
+	for(var i=0; i<list.length; i++) {
+		newArg = list[i];
+		newVal = criterion(newArg);
+		if (newVal < minVal) {
+			minArg = newArg;
+			minVal = newVal;
+		}
+	}
+
+	return minArg;
+}
+
+function getExpiredCards(localStoreObj) {
+	// deprecated!
+	decks = localStoreObj[ACTIVE_DECK_KEY];
+	activeCards = [];
+	for(var i=0; i<decks.length; i++) {
+		deckName = decks[i];
+		activeCards = activeCards.concat(localStoreObj[deckName]);
+	}
+
+	expiredCards = activeCards.filter(function(cardObj) { 
+			var nextReview = cardObj[NEXT_REVIEW_KEY];
+			return typeof(nextReview) == "number" && nextReview < NEXT_REVIEW_TIME;
+		}).sort(function(card1, card2) {
+			// Cards are sorted backwards by expiration date
+			return card2[NEXT_REVIEW_KEY]-card1[NEXT_REVIEW_KEY];
+		});
+	return expiredCards;
+}
 
 
 chrome.storage.onChanged.addListener(function(changes, namespace) {
