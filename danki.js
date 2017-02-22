@@ -43,7 +43,7 @@ $(document).ready(function() {
 			return;
 		}
 		if (VALID_FEEDBACK.indexOf(pressedKey) != -1) {
-			// check that this doesn't conflict with textboxes
+			// check that this doesn't conflict with textboxes (BUG)
 			finishFlashcard(pressedKey);
 		}
 	});
@@ -62,18 +62,7 @@ $(document).ready(function() {
 });
 
 var checkExpirationInterval = setInterval(function() {
-	if (!NEXT_REVIEW_TIME) {
-		return;
-	}
-	if (NEXT_REVIEW_TIME < Date.now()) {
-		chrome.storage.local.get(null, function (localStoreObj) {
-			nextCard = getNextCardByTime(localStoreObj);
-			if (nextCard[NEXT_REVIEW_KEY] > Date.now()) {
-				return;
-			}
-			displayFlashcardFront(nextCard);
-		});
-	}
+	checkExpiration();
 		/* If next_review_time passed:
 			Q <- Search for all cards that have expired; sort by time
 			For all cards in Q:
@@ -101,6 +90,18 @@ var checkExpirationInterval = setInterval(function() {
 
 
 // ------------------- TOP PANEL METHODS -------------------
+
+function checkExpiration() {
+	if (NEXT_REVIEW_TIME < Date.now()) {
+		chrome.storage.local.get(null, function (localStoreObj) {
+			nextCard = getNextCardByTime(localStoreObj);
+			if (nextCard[NEXT_REVIEW_KEY] > Date.now()) {
+				return;
+			}
+			displayFlashcardFront(nextCard);
+		});
+	}
+}
 
 function displayFlashcardFront(nextCard) {
 	if (AWAITING_FEEDBACK) {
@@ -219,6 +220,7 @@ function onloadProcedures() {
 	updateJSONDisplay();
 	updateDeckChoicesHTML();
 	updateNextCardInfo();
+	checkExpiration();
 }
 
 function updateNextCardInfo() {
