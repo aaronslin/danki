@@ -7,7 +7,7 @@
 	text-align: center;
 }
 
-#otherContainer {
+#settingsContainer {
 	margin-top: 10px;
 	height: 57%;
 }
@@ -26,7 +26,7 @@
 	width: 30%;
 }
 
-#otherTable {
+#settingsTable {
 	width: 95%;
 }
 
@@ -39,7 +39,7 @@
 .flashcardOuter {
 	background-color: #F00;
 	display: inline-block;
-	width: 45%;
+	width: 44%;
 	height: 99%;
 	max-width: 500px;
 	max-height: 400px;
@@ -67,7 +67,25 @@
 
 #flashcardSeparator {
 	display: inline-block;
-	width: 5%;
+	width: 4%;
+}
+
+#flashcardSeparator.disappear {
+	width: 0%;
+	height: 0px;
+}
+
+#buttonContainer {
+	text-align: center;
+}
+
+#buttonInnerContainer {
+	display: inline-block;
+}
+
+.bucketButton {
+	width: 100px;
+	margin: 10px;
 }
 
 

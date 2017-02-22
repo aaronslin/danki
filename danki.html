@@ -12,7 +12,7 @@
 						Front.
 					</div>
 				</div>
-				<span id="flashcardSeparator">
+				<span id="flashcardSeparator" class="disappear">
 				</span>
 				<div id="flashcardBack" class="flashcardOuter inactiveCard">
 					<div class="flashcardInner">
@@ -20,8 +20,17 @@
 					</div>
 				</div>
 			</div>
-			<div id="otherContainer">
-				<table id="otherTable">
+			<div id="buttonContainer">
+				<div id="buttonInnerContainer">
+					<button id="bucket1" value="1" class="bucketButton">Incorrect (1)</button>
+					<button id="bucket2" value="2" class="bucketButton">(2)</button>
+					<button id="bucket3" value="3" class="bucketButton">(3)</button>
+					<button id="bucket4" value="4" class="bucketButton">Correct (4)</button>
+					<button id="bucket5" value="5" class="bucketButton">Suspend (5)</button>
+				</div>
+			</div>
+			<div id="settingsContainer">
+				<table id="settingsTable">
 					<tr>
 						<td>User Actions</td>
 						<td>Output Log</td>
