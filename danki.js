@@ -38,14 +38,14 @@ $(document).ready(function() {
 	});
 
 	$(document).keypress(function(press) {
-		pressedKey = String.fromCharCode(press.which);
-		if (!AWAITING_FEEDBACK) {
-			return;
-		}
-		if (VALID_FEEDBACK.indexOf(pressedKey) != -1) {
-			// check that this doesn't conflict with textboxes (BUG)
-			finishFlashcard(pressedKey);
-		}
+		pressedVal = String.fromCharCode(press.which);
+		processFeedback(pressedVal);
+
+	});
+
+	$(".bucketButton").click(function(press) {
+		bucketNum = press.target.value;
+		processFeedback(bucketNum);
 	});
 
 
@@ -90,6 +90,16 @@ var checkExpirationInterval = setInterval(function() {
 
 
 // ------------------- TOP PANEL METHODS -------------------
+
+function processFeedback(bucketFeedback) {
+	if (!AWAITING_FEEDBACK) {
+		return;
+	}
+	if (VALID_FEEDBACK.indexOf(bucketFeedback) != -1) {
+		// check that this doesn't conflict with textboxes (BUG)
+		finishFlashcard(bucketFeedback);
+	}
+}
 
 function checkExpiration() {
 	if (NEXT_REVIEW_TIME < Date.now()) {
@@ -137,7 +147,6 @@ function finishFlashcard(feedback) {
 
 	chrome.storage.local.get(deckName, function(deckObj) {
 		deck = deckObj[deckName];
-		console.log(deckObj, deckName)
 		deck = removeOneFromArraySuchThat(deck, function(card) {
 			return card[CREATED_KEY] == newCard[CREATED_KEY] && 
 					card[FRONT_KEY] == newCard[FRONT_KEY] &&
@@ -169,7 +178,6 @@ function finishFlashcard(feedback) {
 }
 
 function removeOneFromArraySuchThat(array, criterion) {
-	console.log(array)
 	for(var i=0; i<array.length; i++) {
 		if (criterion(array[i])) {
 			array.splice(i,1);
