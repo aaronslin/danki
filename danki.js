@@ -261,7 +261,7 @@ function leitner_bucketToNextReview(bucketNum) {
 	dateUnitPerSecond = 1000;
 	
 	var timeDiff = scalar * Math.pow(exponential, bucketNum-1) * randomRange(1-noiseParam, 1+noiseParam);
-	return Date.now() / dateUnitPerSecond + timeDiff;
+	return Date.now() + dateUnitPerSecond * timeDiff;
 	//return temporaryNextReview();
 }
 
