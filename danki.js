@@ -139,7 +139,7 @@ function displayFlashcardBack() {
 function finishFlashcard(feedback) {
 	var newCard = CURRENT_CARD;
 	var newBucket = SRS_ALGORITHM(CURRENT_CARD[BUCKET_KEY], feedback);
-	var nextReview = bucketToNextReview(newBucket)
+	var nextReview = leitner_bucketToNextReview(newBucket)
 	newCard[BUCKET_KEY] = newBucket;
 	newCard[NEXT_REVIEW_KEY] = nextReview;
 
@@ -254,9 +254,19 @@ function srs_Leitner(currBucketNum, feedback) {
 	}
 }
 
-function bucketToNextReview(bucketNum) {
-	noise = 1;
-	return temporaryNextReview();
+function leitner_bucketToNextReview(bucketNum) {
+	scalar = 60*3;
+	exponential = 8;
+	noiseParam = .2;
+	dateUnitPerSecond = 1000;
+	
+	var timeDiff = scalar * Math.pow(exponential, bucketNum-1) * randomRange(1-noiseParam, 1+noiseParam);
+	return Date.now() / dateUnitPerSecond + timeDiff;
+	//return temporaryNextReview();
+}
+
+function randomRange(min, max) {
+	return Math.random() * (max-min) + (max+min)/2;
 }
 
 
@@ -300,7 +310,7 @@ function addNewCard() {
 	var cardToStore = {[FRONT_KEY]: front, 
 						[BACK_KEY]: back,
 						[BUCKET_KEY]: BUCKET_DEFAULT,
-						[NEXT_REVIEW_KEY]: temporaryNextReview(),
+						[NEXT_REVIEW_KEY]: leitner_bucketToNextReview(BUCKET_DEFAULT),
 						[CREATED_KEY]: Date.now(),
 						[DECK_NAME_KEY]: deckName
 	};
@@ -335,9 +345,6 @@ function pushToStorageList(key, element, callback) {
 		});
 	});
 }
-
-
-
 
 function listContainsEl(list, element) {
 	return list.indexOf(element) != -1;
