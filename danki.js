@@ -117,12 +117,12 @@ function displayFlashcardFront(nextCard) {
 	if (AWAITING_FEEDBACK) {
 		return;
 	}
+	$("#flashcardFront > .flashcardInner").html(nextCard[FRONT_KEY]);
+	$("#flashcardBack > .flashcardInner").html(nextCard[BACK_KEY]);
+
 	$("#flashcardFront").removeClass("inactiveCard").addClass("activeCard");
 	$("#flashcardBack").removeClass("activeCard").addClass("inactiveCard");
 	$("#flashcardSeparator").addClass("disappear");	
-
-	$("#flashcardFront > .flashcardInner").html(nextCard[FRONT_KEY]);
-	$("#flashcardBack > .flashcardInner").html(nextCard[BACK_KEY]);
 	
 	NEXT_REVIEW_TIME = null;
 	CURRENT_CARD = nextCard;
@@ -145,6 +145,9 @@ function finishFlashcard(feedback) {
 
 	var deckName = newCard[DECK_NAME_KEY];
 
+	AWAITING_FEEDBACK = false;
+	CURRENT_CARD = null;
+
 	chrome.storage.local.get(deckName, function(deckObj) {
 		deck = deckObj[deckName];
 		deck = removeOneFromArraySuchThat(deck, function(card) {
@@ -155,26 +158,21 @@ function finishFlashcard(feedback) {
 		deck.push(newCard);
 		chrome.storage.local.set({[deckName]: deck}, function() {
 			console.log("Card successfully updated:", newCard[FRONT_KEY]);
-			return;
+
+			// Display the next card or reset NEXT_REVIEW_TIME
+			chrome.storage.local.get(null, function(localStoreObj) {
+				nextCard = getNextCardByTime(localStoreObj);
+				nextReviewTime = nextCard[NEXT_REVIEW_KEY];
+				if (nextReviewTime < Date.now()) {
+					displayFlashcardFront(nextCard);
+				} else {
+					NEXT_REVIEW_TIME = nextReviewTime;
+					$("#flashcardFront").removeClass("activeCard").addClass("inactiveCard");
+					$("#flashcardBack").removeClass("activeCard").addClass("inactiveCard");
+				}
+			});
 		});
 	});
-
-	AWAITING_FEEDBACK = false;
-	CURRENT_CARD = null;
-
-	chrome.storage.local.get(null, function(localStoreObj) {
-		nextCard = getNextCardByTime(localStoreObj);
-		nextReviewTime = nextCard[NEXT_REVIEW_KEY];
-			// Notice that prevents you from seeing the same card twice!
-			// To revert, use Math.min(^, nextReview); Don't forget about async.
-		if (nextReviewTime < Date.now()) {
-			displayFlashcardFront(nextCard);
-		} else {
-			NEXT_REVIEW_TIME = nextReviewTime;
-		}
-	});
-
-
 }
 
 function removeOneFromArraySuchThat(array, criterion) {
